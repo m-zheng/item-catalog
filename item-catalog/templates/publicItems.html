@@ -1,0 +1,42 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-9 text-left text-uppercase">
+            <h1>{{ category.name }}</h1>
+        </div>
+        {% if session.username != creator.name %}
+        <div class="col-md-3">
+            <h3>
+                <img src="{{creator.picture}}" class="img-circle" style="width: 40px">
+                {{ creator.name }}
+            </h3>
+        </div>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul>
+                {% for message in messages %}
+                <div class="alert alert-info">
+                    <strong>{{ message }}</strong>
+                </div>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+    {% if items !=[] %}	
+    <div class="row">
+        <div class="col-md-12">
+            {% for item in items %}
+            <h3>{{item.name}}</h3>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

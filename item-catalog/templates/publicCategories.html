@@ -1,0 +1,45 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul>
+                {% for message in messages %}
+                <div class="alert alert-info">
+                    <strong>{{ message }}</strong>
+                </div>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            {% for category in categories %}
+            <div class="post-preview">
+                <a href="{{url_for('showItems', category_id = category.id)}}">
+                    <h2 class="post-title">
+                        {{category.name}}
+                    </h2>
+                </a>
+            </div>
+            <p class="post-meta">
+                Posted by 
+                <strong class="text-capitalize">{{category.user.name}}</strong>
+            </p>            
+            <hr>
+            {% endfor %}
+            <!-- Pager -->
+            <ul class="pager">
+                <li class="next">
+                    <a id="back-to-top">Back to top</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Item Catalog</title>
+        <!-- Fonts -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700">
+        <!-- Styles -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome-animation/0.0.10/font-awesome-animation.css" type="text/css" />
+        <link rel="stylesheet" href="/static/styles.css" type="text/css" />
+        <style>
+            body {
+            font-family: 'Lato';
+            }
+            .fa-btn {
+            margin-right: 6px;
+            }
+        </style>
+        <!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script src="//apis.google.com/js/platform.js?onload=start"> </script>
+        <!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->        
+    </head>
+    <body id="app-layout">
+        <nav class="navbar navbar-default navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <!-- Collapsed Hamburger -->
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">
+                    <span class="sr-only">Toggle Navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <!-- Branding Image -->
+                    <a class="navbar-brand" href="{{url_for('showCategories')}}">
+                    Item Catalog
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse" id="app-navbar-collapse">
+                    <!--Right Side Of Navbar -->
+                    <ul class="nav navbar-nav navbar-right">
+                        <!--Authentication Links <--></-->
+                        {%if 'username' in session %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                            <img class="user-image img-circle" src="{{session.picture}}" alt="user_picture">
+                            {{session.username}} <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="{{url_for('disconnect')}}"><i class="fa fa-btn fa-sign-out"></i>Logout</a></li>
+                            </ul>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="result">
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="login_panel">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Login</div>
+                            <div class="panel-body">
+                                <div class="col-md-4 col-md-offset-4">
+                                    <!-- GOOGLE PLUS SIGN IN BUTTON-->
+                                    <div id="googleSignInButton">
+                                        <span class="g-signin"
+                                            data-scope="openid email profile"
+                                            data-clientid="830671681836-5b7jg1kp34v85jq2h7n5ejfgc3uf16bs.apps.googleusercontent.com"
+                                            data-redirecturi="postmessage"
+                                            data-accesstype="offline"
+                                            data-cookiepolicy="single_host_origin"
+                                            data-callback="signInCallback"
+                                            data-approvalprompt="force">
+                                        </span>
+                                    </div>
+                                    <!--END GOOGLE PLUS SIGN IN BUTTON -->
+
+                                    <button id="fbSignInButton">
+                                        <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
+                                            <a href='javascript:sendTokenToServer()'>Login with Facebook</a>
+                                        </fb:login-button>
+                                    </button>
+                                    <!--END FACEBOOK SIGN IN -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                        <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://uk.linkedin.com/in/minghua-zheng-495762115">
+                                <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/minghua1991">
+                                <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="mailto:m.zheng1991@outlook.com">
+                                <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                                </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.facebook.com">
+                                <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                                </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <p class="copyright text-muted text-center">Copyright &copy; Minghua 2017</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- JavaScripts -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js" integrity="sha384-I6F5OKECLVtK/BL+8iSLDEHowSAfUo76ZL9+kGAgTRdiByINKJaqTPH/QVNS1VDb" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+        <script src="/static/scroll.js"></script>
+        
+        <!--GOOGLE SIGN IN -->
+        <script>
+            function signInCallback(authResult) {
+                if (authResult['code']) {
+                    $('#login_panel').attr('style', 'display:none');
+                    $.ajax({
+                        type: 'POST',
+                        url: '/gconnect?state={{STATE}}',
+                        contentType: 'application/octet-stream; charset=utf-8',
+                        data: authResult['code'],
+                        success: function(result) {
+                            if (result) {
+                                $('#result').html('<h1>Login Successful!</h1></br>' + result + '</br><h2>Redirecting...</h2>')
+                                setTimeout(function() {
+                                    window.location.href = "/category/";
+                                }, 4000);
+                            } else if (authResult['error']) {
+                                console.log('There was an error: ' + authResult['error']);
+                            } else {
+                                $('#result').html('<h1>Failed to make a server side call. check your configuration and console.</h1>')
+                            }
+                        }
+            
+            
+                    });
+                }
+            }
+        </script>
+        
+        <!--FACEBOOK SIGN IN -->
+        <script>
+            window.fbAsyncInit = function() {
+                FB.init({
+                    appId: '548924408611273',
+                    cookie: true, // enable cookies to allow the server to access
+                    // the session
+                    xfbml: true, // parse social plugins on this page
+                    version: 'v2.8' // use version 2.8
+                });
+                FB.AppEvents.logPageView();
+            };
+            
+            (function(d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) {
+                    return;
+                }
+                js = d.createElement(s);
+                js.id = id;
+                js.src = "//connect.facebook.net/en_US/sdk.js";
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+            
+
+            // Here we run a very simple test of the Graph API after login is
+            // successful.  See statusChangeCallback() for when this call is made.
+            function sendTokenToServer() {
+                var access_token = FB.getAuthResponse()['accessToken'];
+                console.log(access_token);
+                console.log('Welcome!  Fetching your information.... ');
+                FB.api('/me', function(response) {
+                    console.log('Successful login for: ' + response.name);
+                    $.ajax({
+                        type: 'POST',
+                        url: '/fbconnect?state={{STATE}}',
+                        processData: false,
+                        data: access_token,
+                        contentType: 'application/octet-stream; charset=utf-8',
+                        success: function(result) {
+                            // Handle or verify the server response if necessary.
+                            if (result) {
+                                $('#login_panel').attr('style', 'display:none');
+                                $('#result').html('<h1>Login Successful!</h1></br>' + result + '</br><h2>Redirecting...</h2>')
+                                setTimeout(function() {
+                                    window.location.href = "/category/";
+                                }, 4000);
+            
+                            } else {
+                                $('#result').html('<h1>Failed to make a server-side call. Check your configuration and console.</h1>');
+                            }
+                        }
+            
+                    });
+                });
+            }
+        </script>        
+    </body>
+</html>

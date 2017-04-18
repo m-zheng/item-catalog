@@ -1,6 +1,6 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 from sqlalchemy import create_engine
 
 
@@ -48,14 +48,17 @@ class Category(Base):
 
 
 class Item(Base):
-    """This class will create a 'item' table in database."""
+    """This class will create a 'item' table in database.
+    When a category (parent) is deleted,
+    the item (child) associated with it, will be deleted as well
+    """
     __tablename__ = "item"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
     category_id = Column(Integer, ForeignKey("category.id"))
     user_id = Column(Integer, ForeignKey("user.id"))
-    category = relationship(Category)
+    category = relationship(Category, backref=backref("item", cascade="all, delete"))
     user = relationship(User)
 
     @property

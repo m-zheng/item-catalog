@@ -4,6 +4,8 @@ import random
 import requests
 import string
 
+from functools import wraps
+
 from database_setup import Base, Category, Item, User
 
 from flask import (Flask,
@@ -45,6 +47,7 @@ session = DBSession()
 # Create anti-forgery state token
 @app.route("/login")
 def showLogin():
+    """It randomly generate 32 chars to prevent CSRF."""
     state = "".join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session["state"] = state
@@ -53,6 +56,7 @@ def showLogin():
 
 @app.route("/gconnect", methods=["POST"])
 def gconnect():
+    """It will allow user to sign in the application with google account."""
     # Validate state token
     if request.args.get("state") != login_session["state"]:
         response = make_response(json.dumps("Invalid state parameter."), 401)
@@ -146,6 +150,9 @@ def gconnect():
 
 
 def getUserID(email):
+    """It checks if the given email address is already in database.
+    If yes, it will return the user id.
+    """
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
@@ -154,11 +161,14 @@ def getUserID(email):
 
 
 def getUserInfo(user_id):
+    """It return the user object by checking the user id."""
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
 
 def createUser(login_session):
+    """It checks if the user has stored in the database.
+    If not, it will create a new one."""
     newUser = User(name=login_session["username"],
                    email=login_session["email"],
                    picture=login_session["picture"])
@@ -168,9 +178,20 @@ def createUser(login_session):
     return user.id
 
 
+def login_required(f):
+    """This checks whether the user has signed in or not"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "username" not in login_session:
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 # DISCONNECT - Revoke a current user's token and reset their login_session
 @app.route("/gdisconnect")
 def gdisconnect():
+    """It will clear login_session when logging out google account"""
     access_token = login_session["access_token"]
     print "In gdisconnect access token is %s" % access_token
     print "User name is: "
@@ -210,6 +231,7 @@ def gdisconnect():
 
 @app.route("/fbconnect", methods=["POST"])
 def fbconnect():
+    """This allows users to use facebook account to sign in."""
     if request.args.get("state") != login_session["state"]:
         response = make_response(json.dumps("Invalid state parameter."), 401)
         response.headers["Content-Type"] = "application/json"
@@ -278,6 +300,7 @@ def fbconnect():
 
 @app.route("/fbdisconnect")
 def fbdisconnect():
+    """It will clear login_session when logging out facebook account"""
     facebook_id = login_session["facebook_id"]
     # The access token must me included to successfully logout
     access_token = login_session["access_token"]
@@ -298,6 +321,7 @@ def fbdisconnect():
 # Disconnect based on provider
 @app.route("/disconnect")
 def disconnect():
+    """This is the logout function for facebook and google account"""
     if "provider" in login_session:
         if login_session["provider"] == "google":
             gdisconnect()
@@ -363,9 +387,8 @@ def showCategories():
 
 # Create a new category
 @app.route("/category/new/", methods=["GET", "POST"])
+@login_required
 def newCategory():
-    if "username" not in login_session:
-        return redirect("/login")
     if request.method == "POST":
         newCategory = Category(
             name=request.form["name"], user_id=login_session["user_id"])
@@ -379,11 +402,10 @@ def newCategory():
 
 # Edit a category
 @app.route("/category/<int:category_id>/edit/", methods=["GET", "POST"])
+@login_required
 def editCategory(category_id):
     editedCategory = session.query(
         Category).filter_by(id=category_id).one()
-    if "username" not in login_session:
-        return redirect("/login")
     if editedCategory.user_id != login_session["user_id"]:
         return "<script>function myFunction()\
                 {alert('You are not authorized to edit this category.\
@@ -401,11 +423,10 @@ def editCategory(category_id):
 
 # Delete a category
 @app.route("/category/<int:category_id>/delete/", methods=["GET", "POST"])
+@login_required
 def deleteCategory(category_id):
     categoryToDelete = session.query(
         Category).filter_by(id=category_id).one()
-    if "username" not in login_session:
-        return redirect("/login")
     if categoryToDelete.user_id != login_session["user_id"]:
         return "<script>function myFunction()\
                 {alert('You are not authorized to delete this category.\
@@ -447,9 +468,8 @@ def showItems(category_id):
 
 # Create a new item for a category
 @app.route("/category/<int:category_id>/item/new/", methods=["GET", "POST"])
+@login_required
 def newItem(category_id):
-    if "username" not in login_session:
-        return redirect("/login")
     category = session.query(Category).filter_by(id=category_id).one()
     if login_session["user_id"] != category.user_id:
         return "<script>function myFunction()\
@@ -472,9 +492,8 @@ def newItem(category_id):
 # Edit a item
 @app.route("/category/<int:category_id>/item/<int:item_id>/edit",
            methods=["GET", "POST"])
+@login_required
 def editItem(category_id, item_id):
-    if "username" not in login_session:
-        return redirect("/login")
     editedItem = session.query(Item).filter_by(id=item_id).one()
     category = session.query(Category).filter_by(id=category_id).one()
     if login_session["user_id"] != category.user_id:
@@ -500,9 +519,8 @@ def editItem(category_id, item_id):
 # Delete a item
 @app.route("/category/<int:category_id>/item/<int:item_id>/delete",
            methods=["GET", "POST"])
+@login_required
 def deleteItem(category_id, item_id):
-    if "username" not in login_session:
-        return redirect("/login")
     category = session.query(Category).filter_by(id=category_id).one()
     itemToDelete = session.query(Item).filter_by(id=item_id).one()
     if login_session["user_id"] != category.user_id:

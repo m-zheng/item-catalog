@@ -41,7 +41,7 @@ It provides a list of items within a variety of categories as well as provides a
     ```
   - Navigate to [http://localhost:8080/](http://localhost:8080/) in web browser.
 
-    
+# [Live Demo](http://ec2-34-201-49-136.compute-1.amazonaws.com/)    
 
 License
 ----

@@ -1,8 +1,11 @@
+# [Demo](http://ec2-34-201-49-136.compute-1.amazonaws.com/)    
+
+
 # About
 
-This project is a part of Full Stack Developer Nanodegree from [Udacity](https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd004).
+This project provides a list of items within a variety of categories as well as provides a user registration and authentication system. Registered users will have the ability to post, edit and delete their own items. The application also provides a JSON endpoint.
 
-It provides a list of items within a variety of categories as well as provides a user registration and authentication system. Registered users will have the ability to post, edit and delete their own items. The application also provides a JSON endpoint.
+
 ## Getting Started
 
   - Install [Python 2.7](https://www.python.org/downloads).
@@ -41,7 +44,7 @@ It provides a list of items within a variety of categories as well as provides a
     ```
   - Navigate to [http://localhost:8080/](http://localhost:8080/) in web browser.
 
-# [Live Demo](http://ec2-34-201-49-136.compute-1.amazonaws.com/)    
+
 
 License
 ----
